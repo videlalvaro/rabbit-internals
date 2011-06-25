@@ -35,7 +35,7 @@ When the broker is starting it builds a list of all the modules defined in the l
 
 ## Individual boot steps in detail ##
 
-Here's a graphic that shows the boot steps and their interconnections. An arrow form boot step __A__ to boot step __B__ means that __A__ enables __B__. A line with no arrows on both ends from __A__ to __B__ means that __A__ is required by __B__.
+Here's a graphic that shows the boot steps and their interconnections. An arrow form boot step __A__ to boot step __B__ means that __A__ enables __B__. A line with no arrows on both ends from __A__ to __B__ means that __A__ is required by __B__. You can open the image file in a separate window to see it [full size](http://github.com/videlalvaro/rabbit-internals/raw/master/images/boot_steps.png).
 
 ![demo](http://github.com/videlalvaro/rabbit-internals/raw/master/images/boot_steps.png "Rabbit Boot Steps")
 
