@@ -16,6 +16,13 @@ So far this seems very simple and even can make us doubt of the usefulness of su
 
 The boot steps can be separated into groups. A group of boot steps will enabled certain other group. For example `routing_ready` is actually enabled by many others boot steps, not just `recovery`. One of such steps is the `empty_db_check` that ensures that the `Mnesia` database has the default data inside, like the default `guest` user for example. Also we can see that the `recovery` boot step also depends on `empty_db_check` so this logic takes care of running them in the right order that will satisfy the interdependencies they have.
 
+There are boot steps that don't enable nor require others to be run. They are used to signal that a group of boot steps have happened as a whole, so the next group can start running. For example we have the external infrastructure step:
+
+    {external_infrastructure,
+        [{description,"external infrastructure ready"}]}
+
+As you see it lacks the `requires` and the `enables` properties. But since many steps declare that their enable it, then `external_infrastructure` won't be run until those steps are run. Also many steps that come after in the chain require `external_infrastructure` to have run before, so they won't be started either until it had been processed.
+
 But the story doesn't ends here. RabbitMQ can be extended with plugins that add new exchanges or authentication methods to the broker. Taking the exchanges as an example, each exchange type is registered into the broker via the `rabbit_registry` module, that means the `rabbit_registry` has to be started __before__ we can register a plugin. If we want to add new exchanges we don't have to worry about when they will be started by the broker, neither we have to care of managing the functional dependencies of our exchange. We just add a `-rabbit_boot_step` declaration to our exchange module where we say that our custom exchange depends on `rabbit_registry` et voilà, the exchange will be ready to use.
 
 There's more to it too. In the same way your custom exchange can add their own boot steps to hook up into the server boot process, you can add extra boot steps that perform some stuff in between of RabbitMQ's predefined boot steps. Keep in mind that you have to know what you are doing if you start to customize RabbitMQ's booting process.
