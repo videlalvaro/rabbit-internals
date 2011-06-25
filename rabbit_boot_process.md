@@ -31,8 +31,11 @@ Now, if you have been doing some Erlang programming you may be wondering at this
 
 When the broker is starting it builds a list of all the modules defined in the loaded applications. Once the list of modules is ready it's scanned for attributes called `rabbit_boot_steps`. If there are any, they are added to a new list. This list is further processed and converted into an [directed acyclic graph](http://en.wikipedia.org/wiki/Directed_acyclic_graph) which is used to maintain an order between the boot steps, that is the boot steps are ordered according to their dependencies. Here is where I think relies the elegance of this solution: add declarations to modules in the form of custom module attributes, scan for them and do something smart with the information. This speaks about the flexibility of Erlang as a language.
 
+## Individual boot steps in detail ##
 
-## Individual boot steps in detail
+Here's a graphic that shows the boot steps and their interconnections. An arrow form boot step __A__ to boot step __B__ means that __A__ enables __B__. A line with circles on both ends from __A__ to __B__ means that __A__ is required by __B__.
+
+![demo](http://github.com/videlalvaro/rabbit-internals/raw/master/images/boot_steps.png)
 
 ### pre_boot ###
 
