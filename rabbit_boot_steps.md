@@ -18,13 +18,13 @@ The boot steps can be separated into groups. A group of boot steps will enabled 
 
 But the story doesn't ends here. RabbitMQ can be extended with plugins that add new exchanges or authentication methods to the broker. Taking the exchanges as an example, each exchange type is registered into the broker via the `rabbit_registry` module, that means the `rabbit_registry` has to be started __before__ we can register a plugin. If we want to add new exchanges we don't have to worry about when they will be started by the broker, neither we have to care of managing the functional dependencies of our exchange. We just add a `-rabbit_boot_step` declaration to our exchange module where we say that our custom exchange depends on `rabbit_registry` et voilà, the exchange will be ready to use.
 
+There's more to it too. In the same way your custom exchange can add their own boot steps to hook up into the server boot process, you can add extra boot steps that perform some stuff in between of RabbitMQ's predefined boot steps. Keep in mind that you have to know what you are doing if you start to customize RabbitMQ's booting process.
+
 Now, if you have been doing some Erlang programming you may be wondering at this point how does this even work at all. Erlang modules can have attributes, like the list of exported functions, or the declaration of which behaviour is implemented by the module, but there's no where a mention in the Erlang documentation about `boot_steps` and of course there's nothing about `-rabbit_boot_steps`. How do they work then?
 
 When the broker is starting it builds a list of all the modules defined in the loaded applications. Once the list of modules is built it's scanned for attributes called `rabbit_boot_steps`. If there are any, they are added to a new list. This list is further processed and converted into an acyclic digraph which is used to maintain an order between the boot steps, that is the boot steps are ordered according to their dependencies. Here is where I think relies the elegance of this solution: add declarations to modules in the form of custom module attributes, scan for them and do something smart with the information. This speaks about the flexibility of Erlang as a language.
 
 ### pre_boot ###
-
-### worker_pool ###
 
 ### external_infrastructure ###
 
