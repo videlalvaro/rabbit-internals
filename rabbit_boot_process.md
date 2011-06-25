@@ -1,5 +1,7 @@
 ## RabbitMQ Boot Process ##
 
+
+
 When RabbitMQ starts running it goes through a series of what are called __boot steps__ that take care of initializing all the core components of the broker in a specific order. The whole boot step concept is –as far as I can tell– something unique to RabbitMQ. The idea behind it is that each subsystem that forms part of RabbitMQ as a whole will declare on which other systems it depends on and if it's successfully started, which other systems it will enable. For example, there's no point in accepting client connections if the layer that routes messages to queues is not enabled.
 
 The implementation is very elegant, it relies on adding custom attributes to erlang modules that declare how to start a boot step, in which boot steps it depends on and which boot steps it will enable, here's an example:
@@ -33,7 +35,7 @@ When the broker is starting it builds a list of all the modules defined in the l
 
 ## Individual boot steps in detail ##
 
-Here's a graphic that shows the boot steps and their interconnections. An arrow form boot step __A__ to boot step __B__ means that __A__ enables __B__. A line with circles on both ends from __A__ to __B__ means that __A__ is required by __B__.
+Here's a graphic that shows the boot steps and their interconnections. An arrow form boot step __A__ to boot step __B__ means that __A__ enables __B__. A line with no arrows on both ends from __A__ to __B__ means that __A__ is required by __B__.
 
 ![demo](http://github.com/videlalvaro/rabbit-internals/raw/master/images/boot_steps.png "Rabbit Boot Steps")
 
