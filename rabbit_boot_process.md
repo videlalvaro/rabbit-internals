@@ -35,11 +35,13 @@ When the broker is starting it builds a list of all the modules defined in the l
 
 Here's a graphic that shows the boot steps and their interconnections. An arrow form boot step __A__ to boot step __B__ means that __A__ enables __B__. A line with circles on both ends from __A__ to __B__ means that __A__ is required by __B__.
 
-As we can see there the boot steps are somehow grouped. All starts at the `pre_boot` step continues at the `external_infrastructure` step and so on. Between `pre_boot` and `external_infrastructure` other steps occur that contribute to enable `external_infrastructure`.
+![demo](http://github.com/videlalvaro/rabbit-internals/raw/master/images/boot_steps.png "Rabbit Boot Steps")
 
-![demo](http://github.com/videlalvaro/rabbit-internals/raw/master/images/boot_steps.png)
+As we can see there the boot steps are somehow grouped. All starts at the `pre_boot` step continues at the `external_infrastructure` step and so on. Between `pre_boot` and `external_infrastructure` other steps occur that contribute to enable `external_infrastructure`. Now let's give a brief description of what happens on each of them.
 
 ### pre_boot ###
+
+
 
 ### external_infrastructure ###
 
