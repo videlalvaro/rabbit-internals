@@ -87,7 +87,11 @@ Finally the `core_initialized` step will be run and the boot step process will c
 
 ### routing_ready ###
 
+At this stage RabbitMQ will start to fill up the Mnesia tables with information regarding the exchanges, routing and bindings. In order to do so first the step `empty_db_check` is run. This step will check that the database has the required information inside else it will insert it. At this point the default `guest` user will be created.
 
+Once the database is properly setup the `recovery` step is run. This step will restart recover the bindings between queues and exchanges. At this point is where the actual queue processes are started.
+
+After the queues are running the new boot steps that involve the mirrored queues will be called. Once the mirrored queues are ready the `routing_ready` step will take part and the boot step procedure will continue.
 
 ### log_relay ###
 
