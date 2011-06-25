@@ -1,6 +1,6 @@
 ## RabbitMQ Boot Process ##
 
-RabbitMQ is designed as an Erlang/OTP application which means that during start up it will be initialized as such. The function rabbit:start/2 will be called which lives in the file `rabbit.erl` where the [application behaviour](http://erlang.org/doc/apps/kernel/application.html#Module:start-2) is implemented.
+RabbitMQ is designed as an Erlang/OTP application which means that during start up it will be initialized as such. The function `rabbit:start/2` will be called which lives in the file `rabbit.erl` where the [application behaviour](http://erlang.org/doc/apps/kernel/application.html#Module:start-2) is implemented.
 
 When RabbitMQ starts running it goes through a series of what are called __boot steps__ that take care of initializing all the core components of the broker in a specific order. The whole boot step concept is –as far as I can tell– something unique to RabbitMQ. The idea behind it is that each subsystem that forms part of RabbitMQ as a whole will declare on which other systems it depends on and if it's successfully started, which other systems it will enable. For example, there's no point in accepting client connections if the layer that routes messages to queues is not enabled.
 
