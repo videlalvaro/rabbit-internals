@@ -109,4 +109,6 @@ RabbitMQ is nearly done with the boot process. The `direct_client` step is used 
 
 At this point RabbitMQ is ready to start munching messages. The only thing that remains to do is to notify other nodes in the cluster of it's own presence. That is accomplished via the `notify_cluster` step.
 
+## Summary ##
+
 If you read this far you can see that starting an application like RabbitMQ is not an easy task. Thanks to the __boot steps__ technique the process can be managed in such a way that the interdependencies between processes can be satisfied without sacrificing sanity. What's even more impressive is that this technique can be used to extend the broker in a way that goes beyond what the original developers planed for the server.
