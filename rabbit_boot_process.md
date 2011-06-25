@@ -1,6 +1,6 @@
 ## RabbitMQ Boot Process ##
 
-
+RabbitMQ is designed as an Erlang/OTP application which means that during start up it will be initialized as such. The function rabbit:start/2 will be called which lives in the file `rabbit.erl` where the [application behaviour](http://erlang.org/doc/apps/kernel/application.html#Module:start-2) is implemented.
 
 When RabbitMQ starts running it goes through a series of what are called __boot steps__ that take care of initializing all the core components of the broker in a specific order. The whole boot step concept is –as far as I can tell– something unique to RabbitMQ. The idea behind it is that each subsystem that forms part of RabbitMQ as a whole will declare on which other systems it depends on and if it's successfully started, which other systems it will enable. For example, there's no point in accepting client connections if the layer that routes messages to queues is not enabled.
 
@@ -43,13 +43,43 @@ As we can see there the boot steps are somehow grouped. All starts at the `pre_b
 
 ### pre_boot ###
 
-
+The `pre_boot` signals the start of the boot process. After it happens RabbitMQ will start processing the other boot steps like `file_handle_cache`.
 
 ### external_infrastructure ###
 
+The `file_handle_cache` is used to manage file handles to synchronize reads and writes to them. See `file_handle_cache.erl` for an in depth explanation of its purpose.
+
+The next step that starts is the `worker_pool`. The worker pool process manages a pool of up to `N` number of workers where `N` is the return of `erlang:system_info(schedulers)`. It's used to parallelize function calls across the pool.
+
+Then the turn goes to the `database` step. This one is used to prepare the [Mnesia](http://www.erlang.org/doc/man/mnesia.html) database which is used by RabbitMQ to track exchanges meta information, users, vhosts, bindings, etc.
+
+The `codec_correctness_check` is used to ensure that the AMQP binary generator is working properly, that is, that it will generate the right protocol frames.
+
+Once all the previous steps have run then the `external_infrastructure` step will be processed signaling the boot process that it can continue with the following steps.
+
 ### kernel_ready ###
 
+Once the external infrastructure is ready RabbitMQ will proceed with booting its own kernel. The first step will be the `rabbit_registry` which keeps a registry of plugins and their modules. For example it maps authentication mechanisms to modules with the actual implementation. The same thing is done from _exchange type_ to _exchange type implementation_. This means that if a message is published to an exchange of type _direct_ the registry will be responsible of telling the broker where the routing logic for the direct exchange resides, returning the module name.
+
+After the `rabbit_registry` is ready, it's time to start the authentication modules. RabbitMQ will go through each of them, starting them and making them available. Some steps here are `rabbit_auth_mechanism_amqplain`, `rabbit_auth_mechanism_plain` and so on. If there's a plugin implementing an authentication mechanism, then it will be started at this point.
+
+The next step is the `rabbit_event` which handles event notification for statistics collection. For example when a new channel is created, then a notification like `rabbit_event:notify(channel_created, infos(?CREATION_EVENT_KEYS, State))` is fired.
+
+Then is time for the `rabbit_log` to start which manages the login inside RabbitMQ. This process will delegate logging calls to the native error_logger module.
+
+The same procedure used to enable the authentication mechanism is now repeated for the exchanges. Steps like `rabbit_exchange_type_direct` or `rabbit_exchange_type_fanout` are executed here. If you installed plugins with custom exchange types, they will be registered at this point.
+
+Now is time to run the `kernel_ready` step in order to continue initializing the core of RabbitMQ.
+
 ### core_initialized ###
+
+The first step of this group is the `rabbit_alarm` which starts the memory alarm handler. It will perform alarm management for different events that may happen during the broker life. For example if the memory is about to surpas the `memory_high_watermar` setting, then this module will fire and event.
+
+Next is the `rabbit_node_monitor` which notifies other nodes in the cluster about its own node presence. It also takes cares of dealing with the situation of other node dying.
+
+Then is the turn of the `delegate_sup` step. This supervisor will start a pool of children that will be used to parallelize calls to processes. For example when routing messages, the delegates take care of sending the messages to each of the queues that ought to receive the message.
+
+The next step to be started is the `guid_generator` which as its name implies is used as a _Globally Unique Identifier Server_. This process is called for example when the server needs to generate random queue names, or consumer tags, etc.
 
 ### routing_ready ###
 
