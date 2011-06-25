@@ -95,8 +95,18 @@ After the queues are running the new boot steps that involve the mirrored queues
 
 ### log_relay ###
 
+Before RabbitMQ is ready to start accepting clients is time to start the `rabbit_error_logger` which is done during the `log_relay` boot step and from here the `networking` will be ready to run.
+
 ### networking ###
+
+The `networking` will start all the supervisors that are concerned with the different listeners specified in the application configuration. A `tcp_listener_sup` will be started for each interface/port combination in which RabbitMQ is listening to. The SSL listeners will be started and the tcp client will be ready to accept connections.
 
 ### direct_client ###
 
+RabbitMQ is nearly done with the boot process. The `direct_client` step is used to start the supervisor tree that takes cares of accepting _direct client connections_. The direct client is used for AMQP connections that use the Erlang distribution protocol. Once this is finished is time to proceed to the final step.
+
 ### notify_cluster ###
+
+At this point RabbitMQ is ready to start munching messages. The only thing that remains to do is to notify other nodes in the cluster of it's own presence. That is accomplished via the `notify_cluster` step.
+
+If you read this far you can see that starting an application like RabbitMQ is not an easy task. Thanks to the __boot steps__ technique the process can be managed in such a way that the interdependencies between processes can be satisfied without sacrificing sanity. What's even more impressive is that this technique can be used to extend the broker in a way that goes beyond what the original developers planed for the server.
