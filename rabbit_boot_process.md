@@ -73,7 +73,7 @@ Now is time to run the `kernel_ready` step in order to continue initializing the
 
 ### core_initialized ###
 
-The first step of this group is the `rabbit_alarm` which starts the memory alarm handler. It will perform alarm management for different events that may happen during the broker life. For example if the memory is about to surpass the `memory_high_watermar` setting, then this module will fire and event.
+The first step of this group is the `rabbit_alarm` which starts the memory alarm handler. It will perform alarm management for different events that may happen during the broker life. For example if the memory is about to surpass the `memory_high_watermar` setting, then this module will fire an event.
 
 Next is the `rabbit_node_monitor` which notifies other nodes in the cluster about its own node presence. It also takes cares of dealing with the situation of other node dying.
 
