@@ -35,7 +35,7 @@ When the broker is starting it builds a list of all the modules defined in the l
 
 ## Individual boot steps in detail ##
 
-Here's a graphic that shows the boot steps and their interconnections. An arrow form boot step __A__ to boot step __B__ means that __A__ enables __B__. A line with no arrows on both ends from __A__ to __B__ means that __A__ is required by __B__. You can open the image file in a separate window to see it [full size](http://github.com/videlalvaro/rabbit-internals/raw/master/images/boot_steps.png).
+Here's a graphic that shows the boot steps and their interconnections. An arrow from boot step __A__ to boot step __B__ means that __A__ enables __B__. A line with no arrows on both ends from __A__ to __B__ means that __A__ is required by __B__. You can open the image file in a separate window to see it [full size](http://github.com/videlalvaro/rabbit-internals/raw/master/images/boot_steps.png).
 
 ![demo](http://github.com/videlalvaro/rabbit-internals/raw/master/images/boot_steps.png "Rabbit Boot Steps")
 
@@ -65,7 +65,7 @@ After the `rabbit_registry` is ready, it's time to start the authentication modu
 
 The next step is the `rabbit_event` which handles event notification for statistics collection. For example when a new channel is created, then a notification like `rabbit_event:notify(channel_created, infos(?CREATION_EVENT_KEYS, State))` is fired.
 
-Then is time for the `rabbit_log` to start which manages the login inside RabbitMQ. This process will delegate logging calls to the native error_logger module.
+Then is time for the `rabbit_log` to start which manages the logging inside RabbitMQ. This process will delegate logging calls to the native error_logger module.
 
 The same procedure used to enable the authentication mechanism is now repeated for the exchanges. Steps like `rabbit_exchange_type_direct` or `rabbit_exchange_type_fanout` are executed here. If you installed plugins with custom exchange types, they will be registered at this point.
 
