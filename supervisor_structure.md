@@ -28,7 +28,8 @@ Global supervisor started after the `rabbit` app has started.
 |	Started during the direct_client boot step. See rabbit_direct:boot/0
 |
 |
---- tcp_listener_sup <--- not registered. This supervisor structure is repeated for each network interface on which RabbitMQ listens too
+--- tcp_listener_sup <--- not registered. 
+	This supervisor structure is repeated for each network interface on which RabbitMQ listens too
 |	|
 |	--- tcp_acceptor_sup_IP:PORT
 |	|	 |
@@ -56,10 +57,15 @@ Global supervisor started after the `rabbit` app has started.
 |
 --- delegate_sup <-- instance of rabbit_sup.erl
 |	|
-|	--- delegate_x <-- x goes 0-15 according to app config argument: delegate_count. Used to parallelize calls to processes. For example when routing messages, the delegates take care of sending the messages to each of the queues that ought to receive the message.
+|	--- delegate_x <-- x goes 0-15 according to app config argument: delegate_count. 
+		Used to parallelize calls to processes. 
+		For example when routing messages, the delegates take care of sending the messages 
+		to each of the queues that ought to receive the message.
 |
 --- rabbit_registry
-|	Keeps a registry of plugins and their modules. For example it maps authentication mechanisms to modules with the actual implementation. The same thing is done from exchange type to exchange type implementation.
+|	Keeps a registry of plugins and their modules. 
+	For example it maps authentication mechanisms to modules with the actual implementation. 
+	The same thing is done from exchange type to exchange type implementation.
 |
 --- rabit_log_sup
 |	|
@@ -74,17 +80,21 @@ Global supervisor started after the `rabbit` app has started.
 --- rabbit_event_sup
 |	|
 |	--- rabbit_event
-|		 Handles event notification for statistics collection. For example when a new channel is created, then a notification like `rabbit_event:notify(channel_created, infos(?CREATION_EVENT_KEYS, State))` is fired.
+|		 Handles event notification for statistics collection. 
+		 For example when a new channel is created, then a notification like: 
+		 `rabbit_event:notify(channel_created, infos(?CREATION_EVENT_KEYS, State))` is fired.
 |
 --- file_handle_cache_sup <-- instance of rabbit_sup.erl
 |	|
 |	--- file_handle_cache
-|		Manages file handles to synchronize reads and writes to them. See `file_handle_cache.erl` for an in depth explanation of its purpose.
+|		Manages file handles to synchronize reads and writes to them. 
+		See `file_handle_cache.erl` for an in depth explanation of its purpose.
 |
 --- worker_pool_sup <-- instance of rabbit_sup.erl
 	|
 	--- worker_pool
 	|
 	--- worker_pool_worker
-	The worker pool process manages a pool of up to `N` number of workers where `N` is the return of `erlang:system_info(schedulers)`. Used to parallelize function calls.
+	The worker pool process manages a pool of up to `N` number of workers 
+	where `N` is the return of `erlang:system_info(schedulers)`. Used to parallelize function calls.
 ```
